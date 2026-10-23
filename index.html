@@ -1,27 +1,77 @@
+
 <!doctype html>
-<html lang="en">
-  <head>
-    <title>&lt;model-viewer&gt; template</title>
-    <meta charset="utf-8">
-    <meta name="description" content="&lt;model-viewer&gt; template">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link type="text/css" href="./styles.css" rel="stylesheet"/>
-  </head>
-  <body>
-    <!-- <model-viewer> HTML element -->
-    <model-viewer src="6b5b30a843c040d2bf474d3fabc9e428.glb" ar ar-modes="webxr scene-viewer quick-look" camera-controls tone-mapping="neutral" poster="poster.webp" shadow-intensity="1.19" autoplay camera-orbit="-355.4deg 0.0000573deg 4.833m" field-of-view="30deg" exposure="0.95" shadow-softness="0.85">
-      <div class="progress-bar hide" slot="progress-bar">
-          <div class="update-bar"></div>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Дикая грация — 3D-модель тигра</title>
+
+  <meta name="description"
+    content="Интерактивная веб-презентация трёхмерной модели белого тигра">
+
+  <link rel="stylesheet" href="./styles.css">
+
+  <script type="module"
+    src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.4.0/model-viewer.min.js">
+  </script>
+</head>
+
+<body>
+  <main class="container">
+
+    <header class="header">
+      <p class="eyebrow">ИНТЕРАКТИВНАЯ 3D-КОЛЛЕКЦИЯ</p>
+      <h1>Дикая грация</h1>
+      <p class="subtitle">
+        Сила природы, воплощённая в трёхмерном пространстве
+      </p>
+    </header>
+
+    <section class="viewer-card">
+      <div class="viewer-top">
+        <span class="viewer-label">3D-ЭКСПОНАТ / 01</span>
+        <span class="viewer-label">БЕЛЫЙ ТИГР</span>
       </div>
-      <button slot="ar-button" id="ar-button">
-          View in your space
-      </button>
-      <div id="ar-prompt">
-          <img src="ar_hand_prompt.png">
+
+      <model-viewer
+        id="tiger-model"
+        src="./7791f88254194c91b6f9365f0c7595da.glb"
+        alt="Трёхмерная модель белого тигра"
+        camera-controls
+        auto-rotate
+        rotation-per-second="12deg"
+        shadow-intensity="1"
+        exposure="1"
+        camera-orbit="0deg 75deg auto"
+        field-of-view="30deg"
+        interaction-prompt="auto"
+        ar
+        ar-modes="webxr scene-viewer quick-look">
+      </model-viewer>
+
+      <div class="viewer-bottom">
+        <span>↻ ВРАЩАЙТЕ МОДЕЛЬ МЫШЬЮ</span>
+        <span>⊕ ПРИБЛИЖАЙТЕ КОЛЁСИКОМ</span>
       </div>
-    </model-viewer>  
-    <script src="script.js"></script>
-    <!-- Loads <model-viewer> for browsers: -->
-    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.4.0/model-viewer.min.js"></script>
-  </body>
+    </section>
+
+    <section class="info-card">
+      <p class="section-label">ОБЪЕКТ ИССЛЕДОВАНИЯ</p>
+      <h2>Красота в каждой детали</h2>
+      <p>
+        Белый тигр — редкая цветовая форма бенгальского тигра,
+        отличающаяся светлой шерстью и выразительными тёмными полосами.
+        Интерактивная 3D-модель позволяет рассмотреть особенности
+        внешнего вида животного с разных ракурсов.
+      </p>
+    </section>
+
+    <footer>
+      Лабораторная работа № 5 ·
+      Интерактивная веб-презентация 3D-модели
+    </footer>
+
+  </main>
+</body>
 </html>
