@@ -2,807 +2,391 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Белый тигр — Лабораторная №6</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Дикая грация — лабораторная работа №6</title>
 
-  <!-- Совместимость Three.js -->
-  <script type="importmap">
-  {
-    "imports": {
-      "three": "./three-shim.js",
-      "three-real": "https://cdn.jsdelivr.net/npm/three@0.183.0/build/three.module.js"
-    }
+<script type="importmap">
+{
+  "imports": {
+    "three": "./three-shim.js",
+    "three-real": "https://cdn.jsdelivr.net/npm/three@0.183.0/build/three.module.js"
   }
-  </script>
+}
+</script>
 
-  <script type="module"
-    src="https://cdn.jsdelivr.net/npm/@google/model-viewer/dist/model-viewer-module.min.js">
-  </script>
+<script type="module" src="https://cdn.jsdelivr.net/npm/@google/model-viewer/dist/model-viewer-module.min.js"></script>
+<script type="module" src="https://cdn.jsdelivr.net/npm/@google/model-viewer-effects@1.5.0/dist/model-viewer-effects.min.js"></script>
 
-  <script type="module"
-    src="https://cdn.jsdelivr.net/npm/@google/model-viewer-effects@1.5.0/dist/model-viewer-effects.min.js">
-  </script>
+<style>
+:root {
+  --bg: #102C53;
+  --panel: #1D4576;
+  --ink: #F4F7FC;
+  --accent: #D9B779;
+  --muted: #D9E5F5;
+}
 
-  <style>
-    :root {
-      --navy: #102C53;
-      --blue: #1D4576;
-      --blue-light: #37669A;
-      --gold: #D9B779;
-      --white: #FFFFFF;
-      --cream: #F4F7FC;
-      --muted: #D9E4F5;
-    }
+* { box-sizing: border-box; }
 
-    * {
-      box-sizing: border-box;
-    }
+html, body {
+  margin: 0;
+  min-height: 100%;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: Arial, sans-serif;
+}
 
-    body {
-      margin: 0;
-      min-height: 100vh;
-      font-family: Arial, sans-serif;
-      color: var(--white);
-      background: linear-gradient(
-        145deg,
-        #37669A 0%,
-        #173F73 45%,
-        #0A2346 100%
-      );
-    }
+main {
+  width: min(94%, 1100px);
+  margin: auto;
+  padding: 48px 0 25px;
+}
 
-    .container {
-      width: min(94%, 1050px);
-      margin: 0 auto;
-    }
+header {
+  text-align: center;
+  margin-bottom: 30px;
+}
 
-    /* ШАПКА */
+.eyebrow {
+  font-size: 11px;
+  letter-spacing: 3px;
+  font-weight: 700;
+  color: var(--accent);
+}
 
-    .header {
-      padding: 55px 15px 35px;
-      text-align: center;
-    }
+h1 {
+  font: normal clamp(40px, 7vw, 75px) Georgia, serif;
+  margin: 15px 0;
+}
 
-    .eyebrow {
-      margin: 0;
-      font-size: 11px;
-      font-weight: bold;
-      letter-spacing: 3px;
-      color: var(--gold);
-    }
+.subtitle {
+  color: var(--muted);
+  line-height: 1.6;
+}
 
-    h1 {
-      margin: 16px 0;
-      font-family: Georgia, serif;
-      font-size: clamp(48px, 7vw, 80px);
-      font-weight: normal;
-    }
+.viewer {
+  position: relative;
+  background: var(--panel);
+  border: 1px solid var(--accent);
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 20px 45px #0002;
+}
 
-    .subtitle {
-      max-width: 650px;
-      margin: 0 auto;
-      color: var(--muted);
-      font-size: 16px;
-      line-height: 1.7;
-    }
+model-viewer {
+  display: block;
+  width: 100%;
+  height: 580px;
+  background: radial-gradient(
+    circle at center,
+    var(--panel),
+    var(--bg)
+  );
+  --poster-color: transparent;
+}
 
-    /* КАРТОЧКА 3D-МОДЕЛИ */
+.loading {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: var(--ink);
+  pointer-events: none;
+}
 
-    .viewer-card {
-      overflow: hidden;
-      border: 1px solid #B7CBE4;
-      border-radius: 26px;
-      background: var(--cream);
-      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.25);
-    }
+.ar-button {
+  position: absolute;
+  bottom: 22px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 13px 23px;
+  border: 1px solid var(--accent);
+  border-radius: 14px;
+  background: var(--accent);
+  color: #102C53;
+  font-weight: 700;
+  font-size: 14px;
+  white-space: nowrap;
+  cursor: pointer;
+  box-shadow: 0 6px 20px #0003;
+}
 
-    .viewer-top,
-    .viewer-bottom {
-      display: flex;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 15px;
-      padding: 20px 25px;
-      background: #E8EFF9;
-      color: #526E91;
-    }
+.ar-button:hover {
+  filter: brightness(1.1);
+}
 
-    .viewer-label {
-      color: #4B6C94;
-      font-size: 11px;
-      font-weight: bold;
-      letter-spacing: 2px;
-    }
+.controls {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  margin-top: 22px;
+}
 
-    .viewer-wrap {
-      position: relative;
-    }
+.panel {
+  padding: 23px;
+  background: var(--panel);
+  border: 1px solid var(--accent);
+  border-radius: 20px;
+}
 
-    model-viewer {
-      display: block;
-      width: 100%;
-      height: 570px;
-      background: radial-gradient(
-        ellipse,
-        #FFFFFF,
-        #F5F8FD 60%,
-        #DFEAF7
-      );
-      --poster-color: var(--cream);
-    }
+.panel h2 {
+  font: normal 25px Georgia, serif;
+  margin: 0 0 16px;
+}
 
-    .loading {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 100%;
-      transform: translate(-50%, -50%);
-      text-align: center;
-      color: #526E91;
-      font-size: 14px;
-      pointer-events: none;
-    }
+.buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
 
-    .loading.hidden {
-      display: none;
-    }
+button.control {
+  padding: 11px 16px;
+  border: 1px solid var(--accent);
+  border-radius: 12px;
+  background: var(--bg);
+  color: var(--ink);
+  font-weight: 600;
+  cursor: pointer;
+}
 
-    .viewer-bottom {
-      justify-content: center;
-      gap: 30px;
-      font-size: 12px;
-      font-weight: bold;
-      letter-spacing: 1px;
-    }
+button.control:hover:not(:disabled) {
+  filter: brightness(.95);
+}
 
-    /* ДВА БЛОКА УПРАВЛЕНИЯ */
+button.control.active {
+  background: var(--accent);
+  color: #102C53;
+}
 
-    .controls-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 20px;
-      margin-top: 28px;
-      align-items: stretch;
-    }
+button.control:disabled {
+  opacity: .4;
+  cursor: not-allowed;
+}
 
-    .panel {
-      min-width: 0;
-      padding: 35px 20px;
-      background: var(--blue);
-      border: 1px solid #6386B4;
-      border-radius: 26px;
-      text-align: center;
-      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.2);
-    }
+.note {
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.5;
+}
 
-    .section-label {
-      margin: 0;
-      color: var(--gold);
-      font-size: 11px;
-      font-weight: bold;
-      letter-spacing: 2px;
-    }
+footer {
+  padding: 28px 0;
+  text-align: center;
+  color: var(--muted);
+  font-size: 12px;
+}
 
-    .panel h2 {
-      margin: 14px 0;
-      font-family: Georgia, serif;
-      font-size: clamp(26px, 3vw, 34px);
-      font-weight: normal;
-    }
-
-    .panel-description {
-      max-width: 420px;
-      margin: 0 auto 24px;
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.7;
-    }
-
-    .controls {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 10px;
-    }
-
-    .control {
-      min-height: 44px;
-      padding: 12px 16px;
-      border: 1px solid var(--gold);
-      border-radius: 24px;
-      background: transparent;
-      color: var(--white);
-      font-family: Arial, sans-serif;
-      font-size: 12px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: background 0.2s, transform 0.2s;
-    }
-
-    .control:hover:not(:disabled) {
-      background: var(--blue-light);
-      transform: translateY(-2px);
-    }
-
-    .control.active {
-      background: var(--gold);
-      color: var(--navy);
-    }
-
-    .control:disabled {
-      opacity: 0.45;
-      cursor: not-allowed;
-    }
-
-    .status {
-      margin: 20px 0 0;
-      color: var(--muted);
-      font-size: 12px;
-      line-height: 1.6;
-    }
-
-    .status.error {
-      color: #FFB5A8;
-    }
-
-    /* ИНФОРМАЦИЯ */
-
-    .info-card {
-      margin-top: 28px;
-      padding: 45px 35px;
-      border-radius: 26px;
-      background: var(--cream);
-      color: var(--navy);
-      text-align: center;
-    }
-
-    .info-card h2 {
-      margin: 15px 0;
-      font-family: Georgia, serif;
-      font-size: 36px;
-      font-weight: normal;
-    }
-
-    .info-card p:last-child {
-      max-width: 700px;
-      margin: 0 auto;
-      color: #526E91;
-      line-height: 1.8;
-    }
-
-    footer {
-      padding: 35px 15px 55px;
-      text-align: center;
-      color: var(--muted);
-      font-size: 12px;
-    }
-
-    /* ТЕЛЕФОНЫ */
-
-    @media (max-width: 750px) {
-      .controls-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    @media (max-width: 600px) {
-      .header {
-        padding: 38px 10px 28px;
-      }
-
-      model-viewer {
-        height: 420px;
-      }
-
-      .viewer-top,
-      .viewer-bottom {
-        padding: 16px;
-      }
-
-      .panel {
-        padding: 28px 14px;
-      }
-
-      .info-card {
-        padding: 30px 20px;
-      }
-    }
-  </style>
+@media (max-width: 700px) {
+  main { padding-top: 28px; }
+  model-viewer { height: 420px; }
+  .controls { grid-template-columns: 1fr; }
+  .panel { padding: 17px; }
+}
+</style>
 </head>
 
 <body>
-<main class="container">
+<main>
 
-  <!-- ЗАГОЛОВОК -->
+<header>
+  <p class="eyebrow">ИНТЕРАКТИВНАЯ 3D-ГАЛЕРЕЯ</p>
+  <h1>Дикая грация</h1>
+  <p class="subtitle">
+    Белый тигр — анимация и цифровые эффекты
+  </p>
+</header>
 
-  <header class="header">
-    <p class="eyebrow">
-      ИНТЕРАКТИВНАЯ 3D-КОЛЛЕКЦИЯ
-    </p>
+<section class="viewer">
 
-    <h1>Белый тигр</h1>
+  <model-viewer
+    id="model"
+    src="./6b5b30a843c040d2bf474d3fabc9e428.glb"
+    alt="3D-модель белого тигра"
+    camera-controls
+    touch-action="pan-y"
+    auto-rotate
+    auto-rotate-delay="0"
+    rotation-per-second="15deg"
+    interaction-prompt="none"
+    shadow-intensity="1"
+    shadow-softness="0.8"
+    exposure="1"
+    camera-orbit="0deg 75deg auto"
+    field-of-view="30deg"
+    ar
+    ar-modes="webxr scene-viewer quick-look"
+    animation-crossfade-duration="1000">
 
-    <p class="subtitle">
-      Познакомьтесь с величественным белым тигром
-      в трёхмерном пространстве. Управляйте его движением
-      и экспериментируйте с визуальными эффектами.
-    </p>
-  </header>
+    <effect-composer id="composer"></effect-composer>
 
-  <!-- 3D-МОДЕЛЬ -->
+    <button
+      class="ar-button"
+      slot="ar-button"
+      type="button">
+      ◈ Посмотреть в AR
+    </button>
 
-  <section class="viewer-card">
+  </model-viewer>
 
-    <div class="viewer-top">
-      <span class="viewer-label">3D-ЭКСПОНАТ / 01</span>
-      <span class="viewer-label">БЕЛЫЙ ТИГР</span>
-    </div>
-
-    <div class="viewer-wrap">
-
-      <model-viewer
-        id="tiger-model"
-        src="./6b5b30a843c040d2bf474d3fabc9e428.glb"
-        alt="Анимированная модель белого тигра"
-        camera-controls
-        touch-action="pan-y"
-        autoplay
-        shadow-intensity="1"
-        shadow-softness="0.8"
-        exposure="1"
-        field-of-view="35deg"
-        animation-crossfade-duration="1000">
-      </model-viewer>
-
-      <div class="loading" id="loading">
-        Загрузка 3D-модели...
-      </div>
-
-    </div>
-
-    <div class="viewer-bottom">
-      <span>↻ ВРАЩАЙТЕ МОДЕЛЬ МЫШЬЮ</span>
-      <span>⊕ ПРИБЛИЖАЙТЕ КОЛЁСИКОМ</span>
-    </div>
-
-  </section>
-
-  <!-- КНОПКИ СЛЕВА И СПРАВА -->
-
-  <div class="controls-grid">
-
-    <!-- ЛЕВАЯ КАРТОЧКА -->
-
-    <section class="panel">
-
-      <p class="section-label">
-        УПРАВЛЕНИЕ АНИМАЦИЕЙ
-      </p>
-
-      <h2>Движение тигра</h2>
-
-      <p class="panel-description">
-        Запускайте, останавливайте и повторяйте анимацию.
-        Если клипов несколько, они будут автоматически
-        переключаться.
-      </p>
-
-      <div class="controls">
-
-        <button class="control" id="play-btn" type="button">
-          ▶ Запустить
-        </button>
-
-        <button class="control" id="pause-btn" type="button">
-          ⏸ Остановить
-        </button>
-
-        <button class="control" id="restart-btn" type="button">
-          ↻ Повторить
-        </button>
-
-        <button class="control" id="next-btn"
-                type="button" disabled>
-          Следующая анимация
-        </button>
-
-      </div>
-
-      <p class="status" id="animation-status">
-        Проверяем анимации модели...
-      </p>
-
-    </section>
-
-    <!-- ПРАВАЯ КАРТОЧКА -->
-
-    <section class="panel">
-
-      <p class="section-label">
-        ВИЗУАЛЬНЫЕ ЭФФЕКТЫ
-      </p>
-
-      <h2>Цифровые эффекты</h2>
-
-      <p class="panel-description">
-        Применяйте пикселизацию и цифровые помехи
-        по отдельности или одновременно.
-      </p>
-
-      <div class="controls">
-
-        <button class="control" id="pixel-btn"
-                type="button" disabled>
-          Пикселизация: выкл.
-        </button>
-
-        <button class="control" id="glitch-btn"
-                type="button" disabled>
-          Glitch: выкл.
-        </button>
-
-        <button class="control" id="reset-btn"
-                type="button" disabled>
-          Сбросить эффекты
-        </button>
-
-      </div>
-
-      <p class="status" id="effects-status">
-        Подключение постобработки...
-      </p>
-
-    </section>
-
+  <div id="loading" class="loading">
+    Загрузка 3D-модели...
   </div>
 
-  <!-- ИНФОРМАЦИЯ -->
+</section>
 
-  <section class="info-card">
+<div class="controls">
 
-    <p class="section-label">
-      ОБЪЕКТ ИССЛЕДОВАНИЯ
+  <section class="panel">
+    <h2>Анимация</h2>
+
+    <div class="buttons">
+      <button class="control" id="play" disabled>▶ Запустить</button>
+      <button class="control" id="pause" disabled>⏸ Пауза</button>
+      <button class="control" id="restart" disabled>↻ Сначала</button>
+      <button class="control" id="next" disabled>Следующая анимация</button>
+    </div>
+
+    <p class="note" id="animation-info">
+      Проверяем анимации...
     </p>
-
-    <h2>Красота в каждой детали</h2>
-
-    <p>
-      Белый тигр — редкая цветовая форма бенгальского тигра.
-      Интерактивная трёхмерная модель позволяет рассмотреть
-      его внешний вид, наблюдать движения и сравнивать
-      различные способы цифровой обработки изображения.
-    </p>
-
   </section>
 
-  <footer>
-    Лабораторная работа №6 ·
-    Анимация и эффекты постобработки
-  </footer>
+  <section class="panel">
+    <h2>Визуальные эффекты</h2>
+
+    <div class="buttons">
+      <button class="control" id="pixelate">Pixelate</button>
+      <button class="control" id="glitch">Glitch</button>
+      <button class="control" id="reset">Сбросить эффекты</button>
+    </div>
+
+    <p class="note">
+      Эффекты можно включать одновременно.
+    </p>
+  </section>
+
+</div>
+
+<footer>
+  Лабораторная работа №6 · Анимация, эффекты и дополненная реальность
+</footer>
 
 </main>
 
-<script>
-(function () {
-  "use strict";
+<script type="module">
+const model = document.getElementById("model");
+const loading = document.getElementById("loading");
+const composer = document.getElementById("composer");
+const info = document.getElementById("animation-info");
 
-  const viewer = document.getElementById("tiger-model");
-  const loading = document.getElementById("loading");
+const play = document.getElementById("play");
+const pause = document.getElementById("pause");
+const restart = document.getElementById("restart");
+const next = document.getElementById("next");
 
-  const animationStatus =
-    document.getElementById("animation-status");
+const pixelate = document.getElementById("pixelate");
+const glitch = document.getElementById("glitch");
+const reset = document.getElementById("reset");
 
-  const effectsStatus =
-    document.getElementById("effects-status");
+let clips = [];
+let index = 0;
+let pixelOn = false;
+let glitchOn = false;
 
-  const pixelBtn = document.getElementById("pixel-btn");
-  const glitchBtn = document.getElementById("glitch-btn");
-  const resetBtn = document.getElementById("reset-btn");
-  const nextBtn = document.getElementById("next-btn");
+function init() {
+  loading.style.display = "none";
+  clips = model.availableAnimations || [];
 
-  let clips = [];
-  let currentClip = 0;
-  let clipTimer = null;
-  let paused = false;
-
-  let composer = null;
-  let pixelEnabled = false;
-  let glitchEnabled = false;
-  let effectsReady = false;
-
-  // ===================================
-  // АНИМАЦИЯ
-  // ===================================
-
-  function stopCycle() {
-    if (clipTimer !== null) {
-      clearInterval(clipTimer);
-      clipTimer = null;
-    }
+  if (!clips.length) {
+    info.textContent = "В этой модели нет встроенных анимаций.";
+    return;
   }
 
-  function nextClip() {
-    if (clips.length < 2) return;
+  index = 0;
+  model.animationName = clips[0];
+  model.play();
 
-    currentClip = (currentClip + 1) % clips.length;
+  play.disabled = false;
+  pause.disabled = false;
+  restart.disabled = false;
+  next.disabled = clips.length < 2;
 
-    viewer.animationName = clips[currentClip];
-    viewer.play();
+  updateInfo();
+}
 
-    animationStatus.textContent =
-      "Активная анимация: " + clips[currentClip];
+function updateInfo() {
+  info.textContent =
+    `Анимация ${index + 1} из ${clips.length}: ${clips[index]}`;
+}
+
+model.addEventListener("load", init);
+
+model.addEventListener("error", e => {
+  loading.textContent = "Не удалось загрузить модель";
+  console.error(e);
+});
+
+if (model.loaded) init();
+
+play.onclick = () => {
+  if (clips.length) model.play();
+};
+
+pause.onclick = () => {
+  if (clips.length) model.pause();
+};
+
+restart.onclick = () => {
+  if (!clips.length) return;
+  model.currentTime = 0;
+  model.play();
+};
+
+next.onclick = () => {
+  if (clips.length < 2) return;
+
+  index = (index + 1) % clips.length;
+  model.animationName = clips[index];
+  model.play();
+  updateInfo();
+};
+
+function applyEffects() {
+  composer.replaceChildren();
+
+  if (pixelOn) {
+    const el = document.createElement("pixelate-effect");
+    el.setAttribute("granularity", "32");
+    composer.appendChild(el);
   }
 
-  function startCycle() {
-    stopCycle();
-
-    if (!paused && clips.length > 1) {
-      clipTimer = setInterval(nextClip, 5000);
-    }
+  if (glitchOn) {
+    const el = document.createElement("glitch-effect");
+    el.setAttribute("mode", "constant");
+    composer.appendChild(el);
   }
 
-  function setupAnimations() {
-    clips = viewer.availableAnimations || [];
+  pixelate.classList.toggle("active", pixelOn);
+  glitch.classList.toggle("active", glitchOn);
+}
 
-    if (clips.length === 0) {
-      animationStatus.textContent =
-        "В модели нет анимационных клипов.";
-      return;
-    }
+pixelate.onclick = () => {
+  pixelOn = !pixelOn;
+  applyEffects();
+};
 
-    currentClip = 0;
-    viewer.animationName = clips[0];
-    viewer.play();
+glitch.onclick = () => {
+  glitchOn = !glitchOn;
+  applyEffects();
+};
 
-    animationStatus.textContent =
-      "Найдено клипов: " + clips.length +
-      ". Активный: " + clips[0];
-
-    nextBtn.disabled = clips.length < 2;
-
-    startCycle();
-  }
-
-  viewer.addEventListener("load", () => {
-    loading.classList.add("hidden");
-    setupAnimations();
-  });
-
-  viewer.addEventListener("error", event => {
-    loading.textContent =
-      "Ошибка загрузки 3D-модели.";
-
-    animationStatus.textContent =
-      "Не удалось загрузить модель.";
-
-    animationStatus.classList.add("error");
-
-    console.error("Ошибка модели:", event);
-  });
-
-  document.getElementById("play-btn")
-    .addEventListener("click", () => {
-      if (!clips.length) return;
-
-      paused = false;
-      viewer.play();
-      startCycle();
-    });
-
-  document.getElementById("pause-btn")
-    .addEventListener("click", () => {
-      paused = true;
-      viewer.pause();
-      stopCycle();
-    });
-
-  document.getElementById("restart-btn")
-    .addEventListener("click", () => {
-      if (!clips.length) return;
-
-      paused = false;
-      viewer.currentTime = 0;
-      viewer.play();
-      startCycle();
-    });
-
-  nextBtn.addEventListener("click", nextClip);
-
-  // ===================================
-  // ЦИФРОВЫЕ ЭФФЕКТЫ
-  // ===================================
-
-  function createEffect(tag, attributes = {}) {
-    const element = document.createElement(tag);
-
-    for (const [name, value] of Object.entries(attributes)) {
-      element.setAttribute(name, String(value));
-    }
-
-    return element;
-  }
-
-  function reportError(message, error) {
-    effectsStatus.textContent = message;
-    effectsStatus.classList.add("error");
-    console.error(message, error);
-  }
-
-  function rebuildEffects() {
-    if (!effectsReady) return;
-
-    try {
-      if (composer) {
-        composer.remove();
-        composer = null;
-      }
-
-      if (pixelEnabled || glitchEnabled) {
-        composer = document.createElement("effect-composer");
-
-        composer.setAttribute("render-mode", "quality");
-
-        if (pixelEnabled) {
-          composer.appendChild(
-            createEffect("pixelate-effect", {
-              granularity: 32
-            })
-          );
-        }
-
-        if (glitchEnabled) {
-          composer.appendChild(
-            createEffect("glitch-effect", {
-              mode: "constant"
-            })
-          );
-        }
-
-        viewer.appendChild(composer);
-      }
-
-      pixelBtn.classList.toggle(
-        "active", pixelEnabled
-      );
-
-      glitchBtn.classList.toggle(
-        "active", glitchEnabled
-      );
-
-      pixelBtn.textContent =
-        "Пикселизация: " +
-        (pixelEnabled ? "вкл." : "выкл.");
-
-      glitchBtn.textContent =
-        "Glitch: " +
-        (glitchEnabled ? "вкл." : "выкл.");
-
-      pixelBtn.setAttribute(
-        "aria-pressed",
-        String(pixelEnabled)
-      );
-
-      glitchBtn.setAttribute(
-        "aria-pressed",
-        String(glitchEnabled)
-      );
-
-      if (pixelEnabled && glitchEnabled) {
-        effectsStatus.textContent =
-          "Активны Pixelate и Glitch.";
-      } else if (pixelEnabled) {
-        effectsStatus.textContent =
-          "Активна пикселизация.";
-      } else if (glitchEnabled) {
-        effectsStatus.textContent =
-          "Активен Glitch.";
-      } else {
-        effectsStatus.textContent =
-          "Эффекты выключены.";
-      }
-
-      effectsStatus.classList.remove("error");
-
-      if (
-        composer &&
-        typeof composer.queueRender === "function"
-      ) {
-        composer.queueRender();
-      }
-
-    } catch (error) {
-      reportError(
-        "Ошибка применения эффекта: " +
-        error.message,
-        error
-      );
-    }
-  }
-
-  pixelBtn.addEventListener("click", () => {
-    pixelEnabled = !pixelEnabled;
-    rebuildEffects();
-  });
-
-  glitchBtn.addEventListener("click", () => {
-    glitchEnabled = !glitchEnabled;
-    rebuildEffects();
-  });
-
-  resetBtn.addEventListener("click", () => {
-    pixelEnabled = false;
-    glitchEnabled = false;
-    rebuildEffects();
-  });
-
-  // ===================================
-  // ЗАГРУЗКА БИБЛИОТЕКИ
-  // ===================================
-
-  async function initializeEffects() {
-    try {
-      const timeout = new Promise((_, reject) => {
-        setTimeout(
-          () => reject(
-            new Error("Библиотека не загрузилась")
-          ),
-          15000
-        );
-      });
-
-      await Promise.race([
-        Promise.all([
-          customElements.whenDefined("model-viewer"),
-          customElements.whenDefined("effect-composer"),
-          customElements.whenDefined("pixelate-effect"),
-          customElements.whenDefined("glitch-effect")
-        ]),
-        timeout
-      ]);
-
-      if (!viewer.loaded) {
-        await Promise.race([
-          new Promise((resolve, reject) => {
-            viewer.addEventListener(
-              "load",
-              resolve,
-              { once: true }
-            );
-
-            viewer.addEventListener(
-              "error",
-              () => reject(
-                new Error("Ошибка модели")
-              ),
-              { once: true }
-            );
-          }),
-          timeout
-        ]);
-      }
-
-      effectsReady = true;
-
-      pixelBtn.disabled = false;
-      glitchBtn.disabled = false;
-      resetBtn.disabled = false;
-
-      effectsStatus.textContent =
-        "Готово. Выберите эффект.";
-
-    } catch (error) {
-      reportError(
-        "Ошибка подключения: " +
-        error.message,
-        error
-      );
-    }
-  }
-
-  initializeEffects();
-
-})();
+reset.onclick = () => {
+  pixelOn = false;
+  glitchOn = false;
+  applyEffects();
+};
 </script>
 
 </body>
